@@ -1,117 +1,155 @@
-package Assignment1;
-class Node {
-    int data;
-    Node next;
+package DSA;
+import java.util.Scanner;
+class Task {
+    private final String title;
+    private final String description;
+    private boolean completed;
 
-    public Node(int data) {
-        this.data = data;
+    public Task(String title, String description) {
+        this.title = title;
+        this.description = description;
+        this.completed = false;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public boolean isCompleted() {
+        return completed;
+    }
+
+    public void markCompleted() {
+        this.completed = true;
+    }
+}
+
+class Node {
+    private final Task task;
+    private Node next;
+
+    public Node(Task task) {
+        this.task = task;
         this.next = null;
     }
+
+    public Task getTask() {
+        return task;
+    }
+
+    public Node getNext() {
+        return next;
+    }
+
+    public void setNext(Node next) {
+        this.next = next;
+    }
 }
 
-// LinkedList class to perform operations on the linked list
-class LinkedList {
-    Node head;
+class ToDoList {
+    private Node head;
 
-    // Method to insert a node at a specified position in the linked list
-    public void insertAtPos(int data, int position) {
-        Node newNode = new Node(data);
-        if (position == 1) {
-            newNode.next = head;
+    public ToDoList() {
+        this.head = null;
+    }
+
+    public void addToDo(Task task) {
+        Node newNode = new Node(task);
+
+        if (head == null) {
             head = newNode;
         } else {
-            Node temp = head;
-            for (int i = 1; i < position - 1 && temp != null; i++) {
-                temp = temp.next;
+            Node current = head;
+            while (current.getNext() != null) {
+                current = current.getNext();
             }
-            if (temp != null) {
-                newNode.next = temp.next;
-                temp.next = newNode;
-            }
+            current.setNext(newNode);
         }
+        
+        System.out.println("Task added to the to-do list.");
     }
 
-    // Method to delete a node at a specified position in the linked list
-    public void deleteAtPosition(int position) {
-        if (position == 1) {
-            head = head.next;
+    public void markToDoAsCompleted(String title) {
+        Node current = head;
+        boolean found = false;
+
+        while (current != null) {
+            if (current.getTask().getTitle().equals(title)) {
+                current.getTask().markCompleted();
+                found = true;
+                break;
+            }
+            current = current.getNext();
+        }
+
+        if (found) {
+            System.out.println("Task marked as completed: " + title);
         } else {
-            Node temp = head;
-            for (int i = 1; i < position - 1 && temp != null; i++) {
-                temp = temp.next;
-            }
-            if (temp != null && temp.next != null) {
-                temp.next = temp.next.next;
-            }
+            System.out.println("Task not found.");
         }
     }
 
-    // Method to delete the node that occurs after a given node in the linked list
-    public void deleteAfterNode(Node prevNode) {
-        if (prevNode != null && prevNode.next != null) {
-            prevNode.next = prevNode.next.next;
-        }
-    }
-
-    // Method to search for a node with a specific value in the linked list
-    public boolean searchNode(int data) {
-        Node temp = head;
-        while (temp != null) {
-            if (temp.data == data) {
-                return true;
-            }
-            temp = temp.next;
-        }
-        return false;
-    }
-}
-
-// Stack class to implement a stack using linked lists
-class Stack {
-    LinkedList list;
-
-    public Stack() {
-        list = new LinkedList();
-    }
-
-    // Method to push an element onto the stack
-    public void push(int data) {
-        list.insertAtPos(data, 1);
-    }
-
-    // Method to pop the top element from the stack
-    public void pop() {
-        list.deleteAtPosition(1);
-    }
-
-    // Method to peek at the top element of the stack
-    public int peek() {
-        if (list.head != null) {
-            return list.head.data;
+    public void viewToDoList() {
+        if (head == null) {
+            System.out.println("To-do list is empty.");
         } else {
-            return -1; // Stack is empty
+            Node current = head;
+            System.out.println("To-do List:");
+
+            while (current != null) {
+                Task task = current.getTask();
+                System.out.println("Title: " + task.getTitle());
+                System.out.println("Description: " + task.getDescription());
+                System.out.println("Completed: " + task.isCompleted());
+                System.out.println("-----------------------");
+                current = current.getNext();
+            }
         }
     }
 }
 
-// Main class to demonstrate the usage of LinkedList and Stack classes
 public class Main {
     public static void main(String[] args) {
-        // Example usage of LinkedList operations
-        LinkedList linkedList = new LinkedList();
-        linkedList.insertAtPos(45, 1);
-        linkedList.insertAtPos(15, 2);
-        linkedList.insertAtPos(35, 3);
-        linkedList.deleteAtPosition(2);
-        System.out.println(linkedList.searchNode(15)); // Output: false
+        ToDoList toDoList = new ToDoList();
+        Scanner scanner = new Scanner(System.in);
 
-        // Example usage of Stack operations
-        Stack stack = new Stack();
-        stack.push(5);
-        stack.push(24);
-        stack.push(15);
-        System.out.println(stack.peek()); // Output: 15
-        stack.pop();
-        System.out.println(stack.peek()); // Output: 24
-    }
+        while (true) {
+            System.out.println("1. Add task");
+            System.out.println("2. Mark task as completed");
+            System.out.println("3. View to-do list");
+            System.out.println("4. Exit");
+            System.out.print("Enter your choice: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // Consume the newline character
+
+            switch (choice) {
+                case 1 -> {
+                    System.out.print("Enter task title: ");
+                    String title = scanner.nextLine();
+                    System.out.print("Enter task description: ");
+                    String description = scanner.nextLine();
+                    Task task = new Task(title, description);
+                    toDoList.addToDo(task);
+                }
+                case 2 -> {
+                    System.out.print("Enter task title to mark as completed: ");
+                    String taskTitle = scanner.nextLine();
+                    toDoList.markToDoAsCompleted(taskTitle);
+                }
+                    case 3 -> toDoList.viewToDoList();
+                case 4 -> {
+                    System.out.println("Exiting...");
+                    System.exit(0);
+                }
+                default -> System.out.println("Invalid choice. Please try again.");
+            }
+
+            System.out.println();
+        }
+    
+     }
 }
